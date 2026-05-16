@@ -35,7 +35,7 @@ vorp Decimal (5,2),
 Foreign Key (team_id) References Player_Shooting(team_id)
 );
 
-
+  
 Create Table Opp_Stats_Per100 (
 team_id Text Primary Key Not Null,
 season Text,
@@ -693,6 +693,27 @@ And ps.position != 'N/A'
 And ps.season < 2026
 Group By ps.season, ps.position
 Order By ps.position;
+
+/*Compare Avg TOV rate and 3 point rate as it relates to pace of play by year from 1980 to 2025*/
+
+Select 
+season As Season,
+Round(Avg(pace), 2) As Avg_Pace,
+Round(Avg(tov_percent), 2) As Avg_Tov_Rate,
+Round(Avg([three _p_ar]), 2) As Avg_3pt_Rate,
+Case
+When Avg(pace) >= 100 Then 'Fast (>=100)'
+When Avg(pace) >= 95 Then 'Moderate (95-99'
+When Avg(pace) >= 90 Then 'Slow (90-94)'
+Else 'Very Slow (<90)'
+End As Pace_Tiers
+From Team_Summaries
+Where season Between 1980 and 2025
+And pace Is Not Null
+And tov_percent Is Not Null
+And [three _p_ar] Is Not Null
+Group by season
+Order by season; 
 
 /*Create View for Players Stats*/
 
